@@ -7,9 +7,12 @@
 
 #include <OpenGL/gl.h>
 
-#include "game.c"
-
 bool quit = false;
+int window_width = 1280;
+int window_height = 720;
+
+#include "../../libs/math.c"
+#include "game.c"
 
 int main() {
 	printf("HELLO WORLD\n");
@@ -20,7 +23,7 @@ int main() {
 	SDL_Window *window = SDL_CreateWindow("The Street Life",
 										  SDL_WINDOWPOS_CENTERED,
 										  SDL_WINDOWPOS_CENTERED,
-										  1280, 720,
+										  window_width, window_height,
 										  SDL_WINDOW_SHOWN|SDL_WINDOW_OPENGL);
 	
 	/*SDL_GLContext gl_context =*/ SDL_GL_CreateContext(window);
