@@ -6,8 +6,9 @@ struct {
 } input;
 
 struct {
-	float2 pos;
-	float rotation;
+	float2 front_pos;
+	float2 back_pos;
+	float2 rotation;
 } player;
 
 float2 camera = {0};
@@ -25,6 +26,8 @@ void gfx_draw_rect(float x, float y, float w, float h, float rotation) {
 		glVertex2f(-w12,  h12);
 	glEnd();
 	glPopMatrix();
+	
+	player.rotation = make_float2(0.0f, 1.0f);
 }
 
 float screen_world_height;
@@ -75,18 +78,26 @@ void update() {
 	glEnd();
 	glPopMatrix();
 	
-	player.pos = add2(player.pos, mul2f(make_float2(sinf(player.rotation), cosf(player.rotation)), input.gas*0.05f));
-//	player.pos.y += input.gas * 0.01f;
-//	player.pos.y -= input.reverse * 0.01f;
-	player.rotation += input.steering*0.02f;
-//	printf("rot %f\n", player.rotation/180.0f * PI);
 	
-	camera = player.pos;
+	float2 front_dir = make_float2(player.rotation.x * cosf(input.steering) + player.rotation.y * sinf(input.steering),
+								   player.rotation.y * cosf(input.steering) + player.rotation.x * sinf(input.steering));
+	glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
+	glBegin(GL_LINES);
+	glVertex2f(0.0f, 0.0f);
+	float2 end = mul2f(front_dir, 2.0f);
+	glVertex2f(1, 1);
+	glEnd();
+	
+	//float2 back_dir = make_float2(sinf(player.rotation), cosf(player.rotation));
+	//player.pos = add2(player.pos, mul2f(, input.gas*0.05f));
+	//player.rotation += input.steering*0.02f;
+	
+	camera = player.front_pos;
 	
 //	camera.y += input.gas*0.1f;
 //	camera.y -= input.reverse*0.1f;
 //	camera.x += input.steering*0.1f;
 	
 	glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
-	gfx_draw_rect(player.pos.x - camera.x, player.pos.y - camera.y, 0.7f, 2.0f, player.rotation);
+	//gfx_draw_rect(player.front_pos.x - camera.x, player.front_pos.y - camera.y, 0.7f, 2.0f, player.rotation);
 }
