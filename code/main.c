@@ -1,19 +1,25 @@
 
+#ifdef _WIN32
+#	include "w:/libs/jam.c"
+#endif
+
+#ifdef __APPLE__
+#	define SDL_MAIN_HANDLED
+#	include <SDL2/SDL.h>
+#	include <OpenGL/gl.h>
+#endif
+
 #include <stdio.h>
 #include <stdbool.h>
-
-#define SDL_MAIN_HANDLED
-#include <SDL2/SDL.h>
-
-#include <OpenGL/gl.h>
 
 bool quit = false;
 int window_width = 1280;
 int window_height = 720;
 
-#include "../../libs/math.c"
+#include "w:/libs/math.c"
 #include "game.c"
 
+#ifdef __APPLE__
 int main() {
 	printf("HELLO WORLD\n");
 	
@@ -54,3 +60,4 @@ int main() {
 	
 	SDL_Quit();
 }
+#endif
