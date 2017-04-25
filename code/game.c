@@ -6,11 +6,15 @@ struct {
 } input;
 
 struct {
-	float2 front_pos;
+	/*float2 front_pos;
 	float2 back_pos;
 	float2 center;
 	float2 rotation;
 	float2 velocity;
+	float rear_wheel_rotation_speed;*/
+
+	float2 pos;
+	float rotation;
 	float length;
 } player;
 
@@ -76,10 +80,10 @@ void init() {
 			10.0f, -10.0f);
 	glMatrixMode(GL_MODELVIEW);
 
-	player.rotation = make_float2(0.0f, 1.0f);
-	player.length = 2.5f;
+	/*player.rotation = make_float2(0.0f, 1.0f);
 	player.front_pos = make_float2(0.0f, player.length*0.5f);
-	player.back_pos = make_float2(0.0f, -player.length*0.5f);
+	player.back_pos = make_float2(0.0f, -player.length*0.5f);*/
+	player.length = 2.5f;
 
 	car_texture = load_image("ps13.png");
 
@@ -128,7 +132,8 @@ void update() {
 	//player.rotation += input.steering*0.02f;
 	
 	//float2 player_center = div2f(add2(player.front_pos, player.back_pos), 2.0f);
-	camera = player.center;
+	/*camera = player.center;*/
+	camera = player.pos;
 	
 //	camera.y += input.gas*0.1f;
 //	camera.y -= input.reverse*0.1f;
@@ -137,9 +142,9 @@ void update() {
 	glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
 	//gfx_draw_rect(player.front_pos.x - camera.x, player.front_pos.y - camera.y, 0.7f, 2.0f, 0/*player.rotation*/);
 
-	gfx_draw_sprite(car_texture, player.center.x - camera.x, player.center.y - camera.y, (player.length*1.8f)/2.0f, player.length*1.8f, atan2(player.rotation.x, player.rotation.y));
+	gfx_draw_sprite(car_texture, player.pos.x - camera.x, player.pos.y - camera.y, (player.length*1.8f)/2.0f, player.length*1.8f, player.rotation);
 
-	glPushMatrix();
+	/*glPushMatrix();
 	glTranslatef(-camera.x, -camera.y, 0.0f);
 	glPointSize(4.0f);
 	glBegin(GL_POINTS);
@@ -148,5 +153,5 @@ void update() {
 	glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
 	glVertex2f(player.back_pos.x, player.back_pos.y);
 	glEnd();
-	glPopMatrix();
+	glPopMatrix();*/
 }

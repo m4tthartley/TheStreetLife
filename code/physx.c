@@ -1,4 +1,36 @@
 
+float gear_ratios[] = {
+	0.0f,
+	2.66f, // 1
+	1.78f, // 2
+	1.30f, // 3
+	1.0f,  // 4
+	0.74f, // 5
+	0.50f, // 6
+	2.90f, // reverse
+};
+
+#if 0
+
+float differential_ratio = 3.42f;
+float transmission_efficiency = 0.7f;
+float wheel_radius = 0.34f;
+
+float get_rpm() {
+	float rpm = player.rear_wheel_rotation_speed * gear_ratios[1] * differential_ratio * 60.0f / PI2;
+	if (rpm < 1000.0f) rpm = 1000.0f;
+	return rpm;
+}
+
+float drive_force() {
+	float torque = get_torque(rpm) * input.gas;
+	float drive_force = torque * gear_ratios[1] * differential_ratio * transmission_efficiency / wheel_radius;
+}
+
+float2 slip_ratio() {
+	return div2(add2f(neg2(player.velocity), player.rear_wheel_rotation_speed*wheel_radius), normalize2(player.velocity));
+}
+
 void player_physics() {
 	/*float2 steer_dir = normalize2(make_float2(player.rotation.x * cosf(input.steering) + player.rotation.y * sinf(input.steering),
 	player.rotation.y * cosf(input.steering) + player.rotation.x * sinf(input.steering)));*/
@@ -47,4 +79,41 @@ void player_physics() {
 	player.center = div2f(add2(player.front_pos, player.back_pos), 2.0f);
 	player.front_pos = add2(player.center, mul2f(player.rotation, player.length/2.0f));
 	player.back_pos = sub2(player.center, mul2f(player.rotation, player.length/2.0f));
+}
+#endif
+
+// Fuck physics
+
+void player_physics() {
+	static float2 velocity = {0};
+	static float rpm = 0.0f;
+	static int gear = 1;
+
+	if (rain.input.keys['1']) gear = 1, rpm = 0.2f;
+	if (rain.input.keys['2']) gear = 2, rpm = 0.2f;
+	if (rain.input.keys['3']) gear = 3, rpm = 0.2f;
+	if (rain.input.keys['4']) gear = 4, rpm = 0.2f;
+	if (rain.input.keys['5']) gear = 5, rpm = 0.2f;
+	if (rain.input.keys['6']) gear = 6, rpm = 0.2f;
+
+	float2 rotation = make_float2(sinf(player.rotation), cosf(player.rotation));
+	float2 drag = mul2f(mul2(velocity, make_float2(1, 1)), -0.5f);
+	//float2 friction = mul2f(velocity, -3.0f);
+	rpm += (input.gas*2.0f - 1.0f)*0.01f;
+	if (rpm > 1.0f) rpm = 1.0f;
+	if (input.gas > 0.5f) {
+		if (rpm < 0.2f) rpm = 0.2f;
+	} else {
+		if (rpm < 0.0f) rpm = 0.0f;
+	}
+	
+	float2 accel = mul2f(rotation, rpm*4.0f*(1.0f/gear_ratios[gear]));
+	accel = add2(accel, drag);
+	velocity = add2(velocity, mul2f(accel, 1.0f));
+
+	player.pos = add2(player.pos, mul2f(velocity, rain.dt));
+
+	player.rotation += input.steering * 0.01f;
+
+	debug_print("vel %f %f, rpm %f, gear %i \n", velocity.x, velocity.y, rpm, gear);
 }
