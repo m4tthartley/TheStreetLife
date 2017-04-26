@@ -87,19 +87,23 @@ void player_physics() {
 void player_physics() {
 	static float2 velocity = {0};
 	static float rpm = 0.0f;
+	static float drive_shaft_speed = 0.0f;
+	static float wheel_speed = 0.0f;
 	static int gear = 1;
 
-	if (rain.input.keys['1']) gear = 1, rpm = 0.2f;
-	if (rain.input.keys['2']) gear = 2, rpm = 0.2f;
-	if (rain.input.keys['3']) gear = 3, rpm = 0.2f;
-	if (rain.input.keys['4']) gear = 4, rpm = 0.2f;
-	if (rain.input.keys['5']) gear = 5, rpm = 0.2f;
-	if (rain.input.keys['6']) gear = 6, rpm = 0.2f;
+	if (rain.keys['1'].pressed) drive_shaft_speed = (gear_ratios[1]/gear_ratios[gear])*drive_shaft_speed, gear = 1;
+	if (rain.keys['2'].pressed) drive_shaft_speed = (gear_ratios[2]/gear_ratios[gear])*drive_shaft_speed, gear = 2;
+	if (rain.keys['3'].pressed) drive_shaft_speed = (gear_ratios[3]/gear_ratios[gear])*drive_shaft_speed, gear = 3;
+	if (rain.keys['4'].pressed) drive_shaft_speed = (gear_ratios[4]/gear_ratios[gear])*drive_shaft_speed, gear = 4;
+	if (rain.keys['5'].pressed) drive_shaft_speed = (gear_ratios[5]/gear_ratios[gear])*drive_shaft_speed, gear = 5;
+	if (rain.keys['6'].pressed) drive_shaft_speed = (gear_ratios[6]/gear_ratios[gear])*drive_shaft_speed, gear = 6;
+
+	float gear_ratio = gear_ratios[gear];
 
 	float2 rotation = make_float2(sinf(player.rotation), cosf(player.rotation));
 	float2 drag = mul2f(mul2(velocity, make_float2(1, 1)), -0.5f);
 	//float2 friction = mul2f(velocity, -3.0f);
-	rpm += (input.gas*2.0f - 1.0f)*0.01f;
+	rpm += (input.gas*2.0f - 1.0f)*4.0f * rain.dt;
 	if (rpm > 1.0f) rpm = 1.0f;
 	if (input.gas > 0.5f) {
 		if (rpm < 0.2f) rpm = 0.2f;
@@ -107,13 +111,18 @@ void player_physics() {
 		if (rpm < 0.0f) rpm = 0.0f;
 	}
 	
-	float2 accel = mul2f(rotation, rpm*4.0f*(1.0f/gear_ratios[gear]));
+	drive_shaft_speed += (rpm - drive_shaft_speed)*(((drive_shaft_speed-drive_shaft_speed/2.0f)+0.1f)*gear_ratio)*10.0f*rain.dt;
+	rpm -= (rpm - (drive_shaft_speed))*20.0f*rain.dt;
+
+	float2 accel = mul2f(rotation, drive_shaft_speed/gear_ratio * 10.0f);
 	accel = add2(accel, drag);
-	velocity = add2(velocity, mul2f(accel, 1.0f));
+	velocity = add2(velocity, mul2f(accel, rain.dt));
+	/*wheel_speed = drive_shaft_speed / gear_ratio;
+	velocity = add2(velocity, mul2f(rotation, wheel_speed - length2(velocity)));*/
 
 	player.pos = add2(player.pos, mul2f(velocity, rain.dt));
 
 	player.rotation += input.steering * 0.01f;
 
-	debug_print("vel %f %f, rpm %f, gear %i \n", velocity.x, velocity.y, rpm, gear);
+	debug_print("vel %f %f, rpm %f, drive_shaft_speed %f, gear %i \n", velocity.x, velocity.y, rpm, drive_shaft_speed, gear);
 }

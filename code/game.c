@@ -92,9 +92,12 @@ void init() {
 }
 
 void update() {
-	input.gas = rain.input.keys[KEYBOARD_UP];
-	input.reverse = rain.input.keys[KEYBOARD_DOWN];
-	input.steering = -rain.input.keys[KEYBOARD_LEFT] + rain.input.keys[KEYBOARD_RIGHT];
+	input.gas = rain.keys[KEYBOARD_UP].down;
+	input.reverse = rain.keys[KEYBOARD_DOWN].down;
+	input.steering = -rain.keys[KEYBOARD_LEFT].down + rain.keys[KEYBOARD_RIGHT].down;
+	if (input.gas < 0.5f) input.gas = rain.keys['W'].down;
+	if (!input.reverse) input.reverse = rain.keys['S'].down;
+	if (!input.steering) input.steering = -rain.keys['A'].down + rain.keys['D'].down;
 
 	glClearColor(0.0f, 0.1f, 0.2f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
