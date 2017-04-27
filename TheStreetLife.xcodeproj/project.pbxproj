@@ -8,8 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		C970D0F31EA6E8440034132A /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = C970D0F21EA6E8440034132A /* main.c */; };
-		C970D0FA1EA6E95E0034132A /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C970D0F91EA6E95E0034132A /* SDL2.framework */; };
-		C970D0FD1EA96E180034132A /* SDL2.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = C970D0F91EA6E95E0034132A /* SDL2.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -19,17 +17,17 @@
 			dstPath = "";
 			dstSubfolderSpec = 16;
 			files = (
-				C970D0FD1EA96E180034132A /* SDL2.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C95E2D121EB1653A002FB4AD /* physx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = physx.c; path = code/physx.c; sourceTree = SOURCE_ROOT; };
 		C970D0EF1EA6E8440034132A /* TheStreetLife */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = TheStreetLife; sourceTree = BUILT_PRODUCTS_DIR; };
-		C970D0F21EA6E8440034132A /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		C970D0F21EA6E8440034132A /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = main.c; path = code/main.c; sourceTree = SOURCE_ROOT; };
 		C970D0F91EA6E95E0034132A /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL2.framework; sourceTree = "<group>"; };
-		C970D0FB1EA6EB9C0034132A /* game.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = game.c; sourceTree = "<group>"; };
+		C970D0FB1EA6EB9C0034132A /* game.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = game.c; path = code/game.c; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -37,7 +35,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C970D0FA1EA6E95E0034132A /* SDL2.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -64,6 +61,7 @@
 		C970D0F11EA6E8440034132A /* TheStreetLife */ = {
 			isa = PBXGroup;
 			children = (
+				C95E2D121EB1653A002FB4AD /* physx.c */,
 				C970D0F21EA6E8440034132A /* main.c */,
 				C970D0FB1EA6EB9C0034132A /* game.c */,
 			);
@@ -249,6 +247,7 @@
 				C970D0F81EA6E8440034132A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

@@ -91,12 +91,12 @@ void player_physics() {
 	static float wheel_speed = 0.0f;
 	static int gear = 1;
 
-	if (rain.keys['1'].pressed) drive_shaft_speed = (gear_ratios[1]/gear_ratios[gear])*drive_shaft_speed, gear = 1;
-	if (rain.keys['2'].pressed) drive_shaft_speed = (gear_ratios[2]/gear_ratios[gear])*drive_shaft_speed, gear = 2;
-	if (rain.keys['3'].pressed) drive_shaft_speed = (gear_ratios[3]/gear_ratios[gear])*drive_shaft_speed, gear = 3;
-	if (rain.keys['4'].pressed) drive_shaft_speed = (gear_ratios[4]/gear_ratios[gear])*drive_shaft_speed, gear = 4;
-	if (rain.keys['5'].pressed) drive_shaft_speed = (gear_ratios[5]/gear_ratios[gear])*drive_shaft_speed, gear = 5;
-	if (rain.keys['6'].pressed) drive_shaft_speed = (gear_ratios[6]/gear_ratios[gear])*drive_shaft_speed, gear = 6;
+	if (rain.keys[KEY_1].pressed) drive_shaft_speed = (gear_ratios[1]/gear_ratios[gear])*drive_shaft_speed, gear = 1;
+	if (rain.keys[KEY_2].pressed) drive_shaft_speed = (gear_ratios[2]/gear_ratios[gear])*drive_shaft_speed, gear = 2;
+	if (rain.keys[KEY_3].pressed) drive_shaft_speed = (gear_ratios[3]/gear_ratios[gear])*drive_shaft_speed, gear = 3;
+	if (rain.keys[KEY_4].pressed) drive_shaft_speed = (gear_ratios[4]/gear_ratios[gear])*drive_shaft_speed, gear = 4;
+	if (rain.keys[KEY_5].pressed) drive_shaft_speed = (gear_ratios[5]/gear_ratios[gear])*drive_shaft_speed, gear = 5;
+	if (rain.keys[KEY_6].pressed) drive_shaft_speed = (gear_ratios[6]/gear_ratios[gear])*drive_shaft_speed, gear = 6;
 
 	float gear_ratio = gear_ratios[gear];
 

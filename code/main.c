@@ -1,13 +1,15 @@
 
 #ifdef _WIN32
 #	include "w:/libs/jam.c"
+#elif __APPLE__
+#	include "../../libs/jam.c"
 #endif
 
-#ifdef __APPLE__
-#	define SDL_MAIN_HANDLED
-#	include <SDL2/SDL.h>
-#	include <OpenGL/gl.h>
-#endif
+//#ifdef __APPLE__
+//#	define SDL_MAIN_HANDLED
+//#	include <SDL2/SDL.h>
+//#	include <OpenGL/gl.h>
+//#endif
 
 #include <stdio.h>
 #include <stdbool.h>
@@ -16,10 +18,10 @@ bool quit = false;
 int window_width = 1280;
 int window_height = 720;
 
-#include "w:/libs/math.c"
+
 #include "game.c"
 
-#ifdef __APPLE__
+#if 0
 int main() {
 	printf("HELLO WORLD\n");
 	
