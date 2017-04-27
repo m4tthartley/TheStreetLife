@@ -84,6 +84,189 @@ void player_physics() {
 
 // Fuck physics
 
+/*
+	THE DRIFT BIBLE
+	by Josh Parrett
+
+	current angle = direction of velocity
+
+	bigger difference between speed and velocity
+	more angle added to current angle
+
+	less difference between speed and velocity
+	reduce angle added to current angle
+
+	bigger difference between speed and velocity
+	slower acceleration rate
+
+	less difference between speed and velocity
+	higher acceleration rate
+
+	higher velocity
+	faster turn rate
+
+	lower velocity
+	slower turn rate
+
+	no turn
+	turn = current angle
+
+	clutch off
+	speed = velocity
+
+	clutch on
+	speed = gears[gear] * (revs / limit)
+*/
+
+float gear_speeds[] = { 0.0f, 10.0f, 20.0f, 30.0f, 40.0f, 50.0f, 60.0f,};
+
+void player_physics() {
+	static float2 velocity = {0};
+	static float rpm = 0.1f;
+	static float wheel_speed = 0.0f;
+	static int gear = 1;
+	static float wheel_dir;
+
+	float2 rotation = make_float2(sinf(player.rotation), cosf(player.rotation));
+
+	// Velocity
+	if (rain.keys[KEY_E].pressed) {
+		gear = min(gear+1, 6);
+		rpm = wheel_speed/gear_speeds[gear];
+	}
+	if (rain.keys[KEY_Q].pressed) {
+		gear = max(gear-1, 1);
+		rpm = wheel_speed/gear_speeds[gear];
+	}
+
+	if (input.gas > 0.5f) {
+		rpm *= 1.0f + (20.0f/gear_speeds[gear])*rain.dt;
+		rpm = min(rpm, 1.0f);
+	} else {
+		rpm *= 1.0f - (0.8f*rain.dt);
+		rpm = max(rpm, 0.1f);
+	}
+
+	wheel_speed = gear_speeds[gear] * (rpm);
+	float velocity_scalar = length2(velocity);
+	float diff = wheel_speed-velocity_scalar;
+	float accel;
+	if (diff > 0.0f) accel = 1.0f - (diff)/60.0f;
+	else accel = (diff)/60.0f;
+
+	velocity = add2(velocity, mul2f(rotation, accel * 50.0f * rain.dt));
+
+	float2 drag = mul2f(velocity, -0.5f * rain.dt);
+	velocity = add2(velocity, drag);
+
+	player.pos = add2(player.pos, mul2f(velocity, rain.dt));
+
+	// Rotation
+	wheel_dir += (input.steering*(1.2f - velocity_scalar/gear_speeds[6]))*rain.dt;
+	wheel_dir = min(wheel_dir, 1.0f / (velocity_scalar*0.1f));
+	wheel_dir = max(wheel_dir, -1.0f / (velocity_scalar*0.1f));
+	player.rotation += (wheel_dir*velocity_scalar*0.1f)*rain.dt;
+
+	// Readjust velocity
+	rotation = make_float2(sinf(player.rotation), cosf(player.rotation));
+	velocity = mul2f(rotation, length2(velocity));
+
+	// Visualisations
+	{
+		glPushMatrix();
+		glTranslatef(4.0f, 0.0f, 0.0f);
+		glColor4f(0.5f, 0.5f, 0.5f, 1.0f);
+		glBegin(GL_QUADS);
+		glVertex2f(-0.2f, -2.0f);
+		glVertex2f(0.2f, -2.0f);
+		glVertex2f(0.2f, 2.0f);
+		glVertex2f(-0.2f, 2.0f);
+		glEnd();
+
+		glTranslatef(0.0f, -2.0f+(rpm*2.0f), 0.0f);
+		glColor4f(0.0f, 0.5f, 0.0f, 1.0f);
+		glBegin(GL_QUADS);
+		glVertex2f(-0.2f, -2.0f*rpm);
+		glVertex2f(0.2f, -2.0f*rpm);
+		glVertex2f(0.2f, 2.0f*rpm);
+		glVertex2f(-0.2f, 2.0f*rpm);
+		glEnd();
+		glPopMatrix();
+	}
+	{
+		float f = wheel_speed/gear_speeds[6];
+
+		glPushMatrix();
+		glTranslatef(4.4f, 0.0f, 0.0f);
+		glColor4f(0.5f, 0.5f, 0.5f, 1.0f);
+		glBegin(GL_QUADS);
+		glVertex2f(-0.2f, -2.0f);
+		glVertex2f(0.2f, -2.0f);
+		glVertex2f(0.2f, 2.0f);
+		glVertex2f(-0.2f, 2.0f);
+		glEnd();
+
+		glTranslatef(0.0f, -2.0f+(f*2.0f), 0.0f);
+		glColor4f(0.5f, 0.0f, 0.0f, 1.0f);
+		glBegin(GL_QUADS);
+		glVertex2f(-0.2f, -2.0f*f);
+		glVertex2f(0.2f, -2.0f*f);
+		glVertex2f(0.2f, 2.0f*f);
+		glVertex2f(-0.2f, 2.0f*f);
+		glEnd();
+		glPopMatrix();
+	}
+	{
+		float f = velocity_scalar/gear_speeds[6];
+
+		glPushMatrix();
+		glTranslatef(4.8f, 0.0f, 0.0f);
+		glColor4f(0.5f, 0.5f, 0.5f, 1.0f);
+		glBegin(GL_QUADS);
+		glVertex2f(-0.2f, -2.0f);
+		glVertex2f(0.2f, -2.0f);
+		glVertex2f(0.2f, 2.0f);
+		glVertex2f(-0.2f, 2.0f);
+		glEnd();
+
+		glTranslatef(0.0f, -2.0f+(f*2.0f), 0.0f);
+		glColor4f(0.0f, 0.0f, 0.5f, 1.0f);
+		glBegin(GL_QUADS);
+		glVertex2f(-0.2f, -2.0f*f);
+		glVertex2f(0.2f, -2.0f*f);
+		glVertex2f(0.2f, 2.0f*f);
+		glVertex2f(-0.2f, 2.0f*f);
+		glEnd();
+		glPopMatrix();
+	}
+	{
+		float f = wheel_dir;
+
+		glPushMatrix();
+		glTranslatef(0.0f, 4.0f, 0.0f);
+		glRotatef(90, 0, 0, -1);
+		glColor4f(0.5f, 0.5f, 0.5f, 1.0f);
+		glBegin(GL_QUADS);
+		glVertex2f(-0.2f, -2.0f);
+		glVertex2f(0.2f, -2.0f);
+		glVertex2f(0.2f, 2.0f);
+		glVertex2f(-0.2f, 2.0f);
+		glEnd();
+
+		glTranslatef(0.0f, (f*1.0f), 0.0f);
+		glColor4f(0.0f, 0.5f, 0.0f, 1.0f);
+		glBegin(GL_QUADS);
+		glVertex2f(-0.2f, -1.0f*f);
+		glVertex2f(0.2f, -1.0f*f);
+		glVertex2f(0.2f, 1.0f*f);
+		glVertex2f(-0.2f, 1.0f*f);
+		glEnd();
+		glPopMatrix();
+	}
+
+}
+
+#if 0
 void player_physics() {
 	static float2 velocity = {0};
 	static float rpm = 0.0f;
@@ -126,3 +309,4 @@ void player_physics() {
 
 	debug_print("vel %f %f, rpm %f, drive_shaft_speed %f, gear %i \n", velocity.x, velocity.y, rpm, drive_shaft_speed, gear);
 }
+#endif
