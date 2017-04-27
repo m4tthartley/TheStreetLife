@@ -154,7 +154,9 @@ void player_physics() {
 	if (diff > 0.0f) accel = 1.0f - (diff)/60.0f;
 	else accel = (diff)/60.0f;
 
-	velocity = add2(velocity, mul2f(rotation, accel * 50.0f * rain.dt));
+	float slip = max(min(diff, 10.0f), 0.0f) / 10.0f;
+
+	velocity = add2(velocity, mul2f(rotation, accel * (1.0f-(slip*0.5f)) * 20.0f * rain.dt));
 
 	float2 drag = mul2f(velocity, -0.5f * rain.dt);
 	velocity = add2(velocity, drag);
@@ -169,7 +171,10 @@ void player_physics() {
 
 	// Readjust velocity
 	rotation = make_float2(sinf(player.rotation), cosf(player.rotation));
-	velocity = mul2f(rotation, length2(velocity));
+	float rot_diff = dot2(rotation, normalize2(velocity));
+	velocity = mul2f(lerp2(normalize2(velocity), rotation, 1.0f-slip), length2(velocity));
+
+	debug_print("vel %f %f, rpm %f, wheel_speed %f, gear %i, slip %f \n", velocity.x, velocity.y, rpm, wheel_speed, gear, slip);
 
 	// Visualisations
 	{
