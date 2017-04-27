@@ -118,7 +118,7 @@ void player_physics() {
 	speed = gears[gear] * (revs / limit)
 */
 
-float gear_speeds[] = { 0.0f, 10.0f, 20.0f, 30.0f, 40.0f, 50.0f, 60.0f,};
+float gear_speeds[] = { 0.0f, 10.0f, 20.0f, 30.0f, 40.0f, 50.0f, 60.0f }; // meters per second
 
 void player_physics() {
 	static float2 velocity = {0};
@@ -149,22 +149,29 @@ void player_physics() {
 
 	wheel_speed = gear_speeds[gear] * (rpm);
 	float velocity_scalar = length2(velocity);
-	float diff = wheel_speed-velocity_scalar;
+	float diff = min(wheel_speed-velocity_scalar, 40.0f);
 	float accel;
 	if (diff > 0.0f) accel = 1.0f - (diff)/60.0f;
-	else accel = (diff)/60.0f;
+	else accel = (diff*4.0f)/60.0f;
 
 	float slip = max(min(diff, 10.0f), 0.0f) / 10.0f;
 
-	velocity = add2(velocity, mul2f(rotation, accel * (1.0f-(slip*0.5f)) * 20.0f * rain.dt));
+	velocity = add2(velocity, mul2f(rotation, accel * (1.0f-(slip*0.5f)) * 5.0f * rain.dt));
 
-	float2 drag = mul2f(velocity, -0.5f * rain.dt);
-	velocity = add2(velocity, drag);
+	/*float2 drag = mul2f(velocity, -0.1f * rain.dt);
+	velocity = add2(velocity, drag);*/
+
+	float2 breaking = mul2f(velocity, input.reverse * -1.0f * rain.dt);
+	velocity = add2(velocity, breaking);
 
 	player.pos = add2(player.pos, mul2f(velocity, rain.dt));
 
 	// Rotation
-	wheel_dir += (input.steering*(1.2f - velocity_scalar/gear_speeds[6]))*rain.dt;
+	wheel_dir += (input.steering*(1.5f - velocity_scalar/gear_speeds[6]))*rain.dt;
+	if (input.steering > -0.5f && input.steering < 0.5f) {
+		if (wheel_dir > 0.0f) wheel_dir -= (2.0f - velocity_scalar/gear_speeds[6])*rain.dt;
+		else wheel_dir += (2.0f - velocity_scalar/gear_speeds[6])*rain.dt;
+	}
 	wheel_dir = min(wheel_dir, 1.0f / (velocity_scalar*0.1f));
 	wheel_dir = max(wheel_dir, -1.0f / (velocity_scalar*0.1f));
 	player.rotation += (wheel_dir*velocity_scalar*0.1f)*rain.dt;
