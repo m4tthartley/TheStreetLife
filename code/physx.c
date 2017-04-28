@@ -182,7 +182,7 @@ void player_physics() {
 	rotation = make_float2(sinf(player.rotation), cosf(player.rotation));
     
     float direction = atan2(velocity.x, velocity.y);
-//    player.rotation -= direction * (slip / 50.0f); MAKE THIS LINE WORK
+    // player.rotation += (wheel_dir - direction) * (slip / 50.0f); MATT FIX THIS, it almost works for going right
     
 	float rot_diff = dot2(rotation, normalize2(velocity));
 	velocity = mul2f(lerp2(normalize2(velocity), rotation, 1.0f-slip), length2(velocity));
