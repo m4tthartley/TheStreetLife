@@ -49,15 +49,15 @@ void player_physics() {
 	/*float steer_rad = atan2(player.rotation.x, player.rotation.y) + atan2(steer_dir.x, steer_dir.y);
 	steer_dir = normalize2(make_float2(sinf(steer_rad), cosf(steer_rad)));*/
 
-	float coef_friction = 0.3f; // aprox data from Corvette
+	float coef_friction = 0.6f; // aprox data from Corvette
 	float car_front_area = 2.2f; // aprox data from Corvette
-	float air_density = 1.29f;
-	float cdrag = 0.5f * coef_friction * car_front_area * air_density;
+	float air_density = 1.45f;
+	float cdrag = 0.04f * coef_friction * car_front_area * air_density;
 	float speed = length2(player.velocity);
 
 	float2 drag = make_float2(-cdrag * player.velocity.x * speed,
 							  -cdrag * player.velocity.y * speed);
-	float2 resistance = mul2f(player.velocity, -cdrag * 30.0f);
+	float2 resistance = mul2f(player.velocity, -cdrag * 40.0f);
 	float2 traction = mul2f(player.rotation, 100.0f * input.gas); // random number
 	float2 force = add2(add2(traction, drag), resistance);
 	float2 a = mul2f(force, rain.dt);
@@ -149,12 +149,14 @@ void player_physics() {
 
 	wheel_speed = gear_speeds[gear] * (rpm);
 	float velocity_scalar = length2(velocity);
-	float diff = min(wheel_speed-velocity_scalar, 40.0f);
+	float diff = min(wheel_speed-velocity_scalar, 70.0f);
 	float accel;
-	if (diff > 0.0f) accel = 1.0f - (diff)/60.0f;
-	else accel = (diff*4.0f)/60.0f;
+	/* if (diff > 0.0f) accel = 1.0f - (diff)/60.0f;
+	else accel = (diff*7.0f)/60.0f; */
+    
+    accel = (diff*7.0f)/60.0f;
 
-	float slip = max(min(diff, 10.0f), 0.0f) / 10.0f;
+	float slip = max(min(diff, 5.0f), 0.0f) / 5.0f;
 
 	velocity = add2(velocity, mul2f(rotation, accel * (1.0f-(slip*0.5f)) * 5.0f * rain.dt));
 
@@ -167,17 +169,21 @@ void player_physics() {
 	player.pos = add2(player.pos, mul2f(velocity, rain.dt));
 
 	// Rotation
-	wheel_dir += (input.steering*(1.5f - velocity_scalar/gear_speeds[6]))*rain.dt;
+	wheel_dir += (input.steering*(3.5f - velocity_scalar/gear_speeds[6]))*rain.dt;
 	if (input.steering > -0.5f && input.steering < 0.5f) {
-		if (wheel_dir > 0.0f) wheel_dir -= (2.0f - velocity_scalar/gear_speeds[6])*rain.dt;
-		else wheel_dir += (2.0f - velocity_scalar/gear_speeds[6])*rain.dt;
+		if (wheel_dir > 0.0f) wheel_dir -= (2.5f - velocity_scalar/gear_speeds[6])*rain.dt;
+		else wheel_dir += (2.5f - velocity_scalar/gear_speeds[6])*rain.dt;
 	}
 	wheel_dir = min(wheel_dir, 1.0f / (velocity_scalar*0.1f));
 	wheel_dir = max(wheel_dir, -1.0f / (velocity_scalar*0.1f));
 	player.rotation += (wheel_dir*velocity_scalar*0.1f)*rain.dt;
-
+    
 	// Readjust velocity
 	rotation = make_float2(sinf(player.rotation), cosf(player.rotation));
+    
+    float direction = atan2(velocity.x, velocity.y);
+//    player.rotation -= direction * (slip / 50.0f); MAKE THIS LINE WORK
+    
 	float rot_diff = dot2(rotation, normalize2(velocity));
 	velocity = mul2f(lerp2(normalize2(velocity), rotation, 1.0f-slip), length2(velocity));
 
