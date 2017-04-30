@@ -154,7 +154,7 @@ void player_physics() {
 	/* if (diff > 0.0f) accel = 1.0f - (diff)/60.0f;
 	else accel = (diff*7.0f)/60.0f; */
     
-    accel = (diff*7.0f)/60.0f;
+    accel = (diff*7.0f)/50.0f;
 
 	float slip = max(min(diff, 7.5f), 0.0f) / 7.5f;
 
@@ -178,7 +178,7 @@ void player_physics() {
 //	wheel_dir = max(wheel_dir, -0.2f / (slip / (velocity_scalar * 2.0f)));
     wheel_dir = min(wheel_dir, 0.1f * (velocity_scalar * slip));
     wheel_dir = max(wheel_dir, -0.1f * (velocity_scalar * slip));
-	player.rotation += (wheel_dir*velocity_scalar*0.1f)*rain.dt;
+	player.rotation += (wheel_dir*velocity_scalar*0.01f)*rain.dt;
     
 	// Readjust velocity
 	rotation = make_float2(sinf(player.rotation), cosf(player.rotation));
