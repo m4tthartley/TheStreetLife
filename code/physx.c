@@ -156,7 +156,7 @@ void player_physics() {
     
     accel = (diff*7.0f)/60.0f;
 
-	float slip = max(min(diff, 5.0f), 0.0f) / 5.0f;
+	float slip = max(min(diff, 7.5f), 0.0f) / 7.5f;
 
 	velocity = add2(velocity, mul2f(rotation, accel * (1.0f-(slip*0.5f)) * 5.0f * rain.dt));
 
@@ -169,13 +169,15 @@ void player_physics() {
 	player.pos = add2(player.pos, mul2f(velocity, rain.dt));
 
 	// Rotation
-	wheel_dir += (input.steering*(3.5f - velocity_scalar/gear_speeds[6]))*rain.dt;
+	wheel_dir += (input.steering*(4.5f - velocity_scalar/gear_speeds[6]))*rain.dt;
 	if (input.steering > -0.5f && input.steering < 0.5f) {
-		if (wheel_dir > 0.0f) wheel_dir -= (2.5f - velocity_scalar/gear_speeds[6])*rain.dt;
-		else wheel_dir += (2.5f - velocity_scalar/gear_speeds[6])*rain.dt;
+		if (wheel_dir > 0.0f) wheel_dir -= (3.5f - velocity_scalar/gear_speeds[6])*rain.dt;
+		else wheel_dir += (3.5f - velocity_scalar/gear_speeds[6])*rain.dt;
 	}
-	wheel_dir = min(wheel_dir, 1.0f / (velocity_scalar*0.1f));
-	wheel_dir = max(wheel_dir, -1.0f / (velocity_scalar*0.1f));
+//	wheel_dir = min(wheel_dir, 0.2f / (slip / (velocity_scalar * 2.0f)));
+//	wheel_dir = max(wheel_dir, -0.2f / (slip / (velocity_scalar * 2.0f)));
+    wheel_dir = min(wheel_dir, 0.1f * (velocity_scalar * slip));
+    wheel_dir = max(wheel_dir, -0.1f * (velocity_scalar * slip));
 	player.rotation += (wheel_dir*velocity_scalar*0.1f)*rain.dt;
     
 	// Readjust velocity
@@ -184,7 +186,7 @@ void player_physics() {
     float direction = atan2(velocity.x, velocity.y);
 	if (player.rotation < direction-PI) player.rotation += PI2;
 	if (player.rotation > direction+PI) player.rotation -= PI2;
-    player.rotation += wheel_dir * (slip / 50.0f); // MATT FIX THIS, it almost works for going right
+    player.rotation += wheel_dir * (slip / 40.0f); // MATT FIX THIS, it almost works for going right
 
 	float rot_diff = dot2(rotation, normalize2(velocity));
 	velocity = mul2f(lerp2(normalize2(velocity), rotation, 1.0f-slip), length2(velocity));
