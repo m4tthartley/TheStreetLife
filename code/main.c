@@ -1,4 +1,23 @@
 
+#define _NO_CRT_STDIO_INLINE
+int _fltused;
+
+// kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)
+
+// kernel32.lib; w:/msvcrt_test/msvcrt.lib; gdi32.lib; user32.lib; opengl32.lib; %(AdditionalDependencies)
+
+// kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies) w:/msvcrt_test/msvcrt.lib; opengl32.lib
+// %(AdditionalDependencies);   w:/msvcrt_test/msvcrt32.lib; kernel32.lib; user32.lib; gdi32.lib; opengl32.lib;       winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;      
+
+//include <stdafx.h>
+
+//#pragma comment(lib, "kernel32")
+//#pragma comment(lib, "w:\msvcrt_test\msvcrt32.lib")
+//#pragma comment(lib, "user32.lib")
+//#pragma comment(lib, "gdi32.lib")
+//#pragma comment(lib, "opengl32.lib")
+//#pragma comment(lib, "%(AdditionalDependencies)")
+
 #ifdef _WIN32
 #	include "w:/libs/jam.c"
 #elif __APPLE__
