@@ -176,8 +176,8 @@ void player_physics() {
 	}
 //	wheel_dir = min(wheel_dir, 0.2f / (slip / (velocity_scalar * 2.0f)));
 //	wheel_dir = max(wheel_dir, -0.2f / (slip / (velocity_scalar * 2.0f)));
-    wheel_dir = min(wheel_dir, 0.1f * (velocity_scalar * slip));
-    wheel_dir = max(wheel_dir, -0.1f * (velocity_scalar * slip));
+    wheel_dir = min(wheel_dir, 0.1f * (velocity_scalar * max(slip, 0.3f)));
+    wheel_dir = max(wheel_dir, -0.1f * (velocity_scalar * max(slip, 0.3f)));
 	player.rotation += (wheel_dir*velocity_scalar*0.01f)*rain.dt;
     
 	// Readjust velocity
