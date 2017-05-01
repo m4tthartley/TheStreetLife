@@ -178,16 +178,16 @@ void player_physics() {
 //	wheel_dir = max(wheel_dir, -0.2f / (slip / (velocity_scalar * 2.0f)));
     wheel_dir = min(wheel_dir, 0.1f * (velocity_scalar * max(slip, 0.3f)));
     wheel_dir = max(wheel_dir, -0.1f * (velocity_scalar * max(slip, 0.3f)));
-	player.rotation += (wheel_dir*velocity_scalar*0.01f)*rain.dt;
+	player.rotation += (wheel_dir*velocity_scalar*0.1f)*rain.dt;
     
 	// Readjust velocity
 	rotation = make_float2(sinf(player.rotation), cosf(player.rotation));
     
     float direction = atan2(velocity.x, velocity.y);
-	if (player.rotation < direction-PI) player.rotation += PI2;
-	if (player.rotation > direction+PI) player.rotation -= PI2;
-    player.rotation += wheel_dir * (slip / 40.0f); // MATT FIX THIS, it almost works for going right
-
+	if (player.rotation < direction-PI) player.rotation += slip * 40.0f;
+	if (player.rotation > direction+PI) player.rotation -= slip * 40.0f;
+//    player.rotation += direction * (slip / 40.0f); // MATT FIX THIS, it almost works for going right
+    
 	float rot_diff = dot2(rotation, normalize2(velocity));
 	velocity = mul2f(lerp2(normalize2(velocity), rotation, 1.0f-slip), length2(velocity));
 
